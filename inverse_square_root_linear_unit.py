@@ -10,6 +10,7 @@ Original file is located at
 import numpy as np
 import pandas as pd
 from collections import OrderedDict
+import math
 
 import torch
 from torch.autograd import Variable
@@ -46,12 +47,12 @@ def train_model(model,train_loader):
 
 def ISRLU(x,alpha):  
 
-  if(x>=0):
+  if(x >= 0):
     return x
 
   else:
-    den=sqrt(1+alpha*(x**2))
-    return x/den
+    den = math.sqrt(1 + alpha * (math.pow(x,2))
+    return x / den
 
 
 
