@@ -28,17 +28,17 @@ namespace bert
 // our custom layer requires extending IPluginV2 and IPluginCreator classes.
 // For requirements for overriden functions, check TensorRT API docs.
 
-class ISRLU : public nvinfer1::IPluginV2DynamicExt
+class IsrluPluginDynamic : public nvinfer1::IPluginV2DynamicExt
 {
 public:
-    ISRLU(const std::string name, const nvinfer1::DataType type);
-    ISRLU(const std::string name, const nvinfer1::DataType type, const nvinfer1::Weights B);
+    IsrluPluginDynamic(const std::string name, const nvinfer1::DataType type);
+    IsrluPluginDynamic(const std::string name, const nvinfer1::DataType type, const nvinfer1::Weights B);
 
-    ISRLU(const std::string name, const void* data, size_t length);
+    IsrluPluginDynamic(const std::string name, const void* data, size_t length);
 
     // It doesn't make sense to make GeluPluginDynamic without arguments, so we delete
     // default constructor.
-    ISRLU() = delete;
+    IsrluPluginDynamic() = delete;
 
     // IPluginV2DynamicExt Methods
     nvinfer1::IPluginV2DynamicExt* clone() const override;
@@ -89,10 +89,10 @@ protected:
     using nvinfer1::IPluginV2DynamicExt::enqueue;
 };
 
-class ISRLUCreator : public nvinfer1::IPluginCreator
+class IsrluPluginDynamicCreator : public nvinfer1::IPluginCreator
 {
 public:
-    ISRLUCreator();
+    IsrluPluginDynamicCreator();
 
     const char* getPluginName() const override;
 
