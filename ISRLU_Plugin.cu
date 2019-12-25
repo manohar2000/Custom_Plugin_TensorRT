@@ -19,7 +19,7 @@
 #include <vector>
 
 #include "NvInfer.h"
-#include "ISRLU_Plugin.h"
+#include "isrluPlugin.h"
 #include "bertCommon.h"
 #include "common.h"
 #include "serialize.hpp"
