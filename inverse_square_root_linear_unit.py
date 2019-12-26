@@ -45,12 +45,13 @@ def train_model(model,train_loader):
        print(f"Training loss: {running_loss}")
 
 
-def ISRLU(x,alpha):  
+def ISRLU(x):  
 
   if(x >= 0):
     return x
 
   else:
+    alpha=3    
     den = math.sqrt(1 + alpha * (math.pow(x,2))
     return x / den
 
@@ -61,7 +62,7 @@ class ISRLU(nn.Module):
     super().__init__()
 
   def forward(self,input):
-    return ISRLU(x,alpha)
+    return ISRLU(x)
 
 
 class ClassifierISRLU(nn.Module):
