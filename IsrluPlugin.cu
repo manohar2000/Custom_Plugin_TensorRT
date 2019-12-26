@@ -20,7 +20,7 @@
 #include <cmath>
 
 #include "NvInfer.h"
-#include "isrluPlugin.h"
+#include "IsrluPlugin.h"
 #include "bertCommon.h"
 #include "common.h"
 #include "serialize.hpp"
