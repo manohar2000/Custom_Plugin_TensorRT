@@ -17,6 +17,7 @@
 #include <cassert>
 #include <cstring>
 #include <vector>
+#include <cmath>
 
 #include "NvInfer.h"
 #include "isrluPlugin.h"
@@ -40,7 +41,16 @@ __global__ void ISRLUKernel(const T alpha, int n, const T* input, T* output)
     {
         const T in = input[idx];
         
+        if(in >= 0)
+        {
+            const T temp = in;
+        }
+        else
+        {
+            const T temp = in * (1 / sqrt(1 + alpha * in * in));
+        }
         
+        output[idx] = temp;
     }
 }
 
