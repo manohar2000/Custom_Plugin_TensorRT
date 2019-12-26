@@ -65,7 +65,7 @@ inline int computeIsrlu(cudaStream_t stream, int n, const float* input, float* o
     return 0;
 }
 
-inline int computeGelu(cudaStream_t stream, int n, const half* input, half* output)
+inline int computeIsrlu(cudaStream_t stream, int n, const half* input, half* output)
 {
     const int blockSize = 256;
 
@@ -84,7 +84,7 @@ inline int computeGelu(cudaStream_t stream, int n, const half* input, half* outp
     else
     {
         const int gridSize = (n + blockSize - 1) / blockSize;
-        geluKernel<half, blockSize><<<gridSize, blockSize, 0, stream>>>(alpha, n, input, output);
+        IsrluKernel<half, blockSize><<<gridSize, blockSize, 0, stream>>>(alpha, n, input, output);
     }
 
     CHECK(cudaPeekAtLastError());
