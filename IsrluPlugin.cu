@@ -116,31 +116,30 @@ __global__ void IsrluBiasKernel(const T alpha, T* output, const T* input, const 
     }
 }
 
-void computeGeluBias(
+void computeIsrluBias(
     float* output, const float* input, const float* bias, const int ld, const int cols, cudaStream_t stream)
 {
-    geluBiasKernel<float, 256><<<cols, 256, 0, stream>>>(A, B, C, output, input, bias, ld);
+    IsrluBiasKernel<float, 256><<<cols, 256, 0, stream>>>(alpha, output, input, bias, ld);
     CHECK(cudaPeekAtLastError());
 }
 
-void computeGeluBias(
+void computeIsrluBias(
     half* output, const half* input, const half* bias, const int ld, const int cols, cudaStream_t stream)
 {
     if (ld & 1)
     {
-        geluBiasKernel<half, 256><<<cols, 256, 0, stream>>>(A, B, C, output, input, bias, ld);
+        IsrluBiasKernel<half, 256><<<cols, 256, 0, stream>>>(alpha, output, input, bias, ld);
     }
     else
     {
-
-        const half2 A2 = __floats2half2_rn(A, A);
-        const half2 B2 = __floats2half2_rn(B, B);
-        const half2 C2 = __floats2half2_rn(C, C);
+        const half2 aplha2 = __floats2half2_rn(alpha, alpha);
         const int ld2 = ld / 2;
+        
         const half2* input2 = reinterpret_cast<const half2*>(input);
         const half2* bias2 = reinterpret_cast<const half2*>(bias);
         half2* output2 = reinterpret_cast<half2*>(output);
-        geluBiasKernel<half2, 256><<<cols, 256, 0, stream>>>(A2, B2, C2, output2, input2, bias2, ld2);
+        
+        geluIsrluKernel<half2, 256><<<cols, 256, 0, stream>>>(alpha2, output2, input2, bias2, ld2);
     }
 
     CHECK(cudaPeekAtLastError());
