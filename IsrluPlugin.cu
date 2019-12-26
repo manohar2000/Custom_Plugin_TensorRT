@@ -92,7 +92,7 @@ inline int computeIsrlu(cudaStream_t stream, int n, const half* input, half* out
 }
 
 template <typename T, int TPB>  
-__global__ void geluBiasKernel(const T a, const T b, const T c, T* output, const T* input, const T* bias, const int ld)
+__global__ void IsrluBiasKernel(const T alpha, T* output, const T* input, const T* bias, const int ld)
 {
 
     const int offset = blockIdx.x * ld;
@@ -100,9 +100,19 @@ __global__ void geluBiasKernel(const T a, const T b, const T c, T* output, const
     for (int it = threadIdx.x; it < ld; it += TPB)
     {
         const int idx = it + offset;
-        const T in = input[idx] + bias[it];
-        const T cdf = a + a * tanh(in * (c * in * in + b));
-        output[idx] = in * cdf;
+        const T in = input[idx] + bias[it];       
+        if(in >= 0)
+        {
+            const T temp = in;
+        }
+        else
+        {
+            const T temp = in * (1 / sqrt(1 + alpha * in * in));
+        }
+        
+        output[idx] = temp;
+         }
+        
     }
 }
 
