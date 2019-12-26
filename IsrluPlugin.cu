@@ -154,10 +154,10 @@ static const char* ISRLU_PLUGIN_NAME{"CustomIsrluPluginDynamic"};
 } // namespace
 
 // Static class fields initialization
-PluginFieldCollection GeluPluginDynamicCreator::mFC{};
-std::vector<PluginField> GeluPluginDynamicCreator::mPluginAttributes;
+PluginFieldCollection IsrluPluginDynamicCreator::mFC{};
+std::vector<PluginField> IsrluPluginDynamicCreator::mPluginAttributes;
 
-REGISTER_TENSORRT_PLUGIN(GeluPluginDynamicCreator);
+REGISTER_TENSORRT_PLUGIN(IsrluPluginDynamicCreator);
 
 GeluPluginDynamic::GeluPluginDynamic(const std::string name, const DataType type)
     : mLayerName(name)
