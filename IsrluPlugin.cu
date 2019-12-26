@@ -309,24 +309,24 @@ nvinfer1::DataType IsrluPluginDynamic::getOutputDataType(
 
 // IPluginV2 Methods
 
-const char* GeluPluginDynamic::getPluginType() const
+const char* IsrluPluginDynamic::getPluginType() const
 {
-    return GELU_PLUGIN_NAME;
+    return ISRLU_PLUGIN_NAME;
 }
 
-const char* GeluPluginDynamic::getPluginVersion() const
+const char* IsrluPluginDynamic::getPluginVersion() const
 {
-    return GELU_PLUGIN_VERSION;
+    return ISRLU_PLUGIN_VERSION;
 }
 
-int GeluPluginDynamic::getNbOutputs() const
+int IsrluPluginDynamic::getNbOutputs() const
 {
     return 1;
 }
 
-int GeluPluginDynamic::initialize()
+int IsrluPluginDynamic::initialize()
 {
-    gLogVerbose << "GELU init start" << std::endl;
+    gLogVerbose << "ISRLU init start" << std::endl;
     if (mHasBias && mBias.values)
     {
         // target size
@@ -343,11 +343,11 @@ int GeluPluginDynamic::initialize()
             convertAndCopyToDevice(mBias, reinterpret_cast<half*>(mBiasDev));
         }
     }
-    gLogVerbose << "GELU init done" << std::endl;
+    gLogVerbose << "ISRLU init done" << std::endl;
     return 0;
 }
 
-void GeluPluginDynamic::terminate()
+void IsrluPluginDynamic::terminate()
 {
     if (mHasBias)
     {
@@ -355,14 +355,14 @@ void GeluPluginDynamic::terminate()
     }
 }
 
-size_t GeluPluginDynamic::getSerializationSize() const
+size_t IsrluPluginDynamic::getSerializationSize() const
 {
     const size_t wordSize = samplesCommon::getElementSize(mType);
     const size_t biasSize = mHasBias ? mLd * wordSize : 0;
     return sizeof(mType) + sizeof(mHasBias) + sizeof(mLd) + biasSize;
 }
 
-void GeluPluginDynamic::serialize(void* buffer) const
+void IsrluPluginDynamic::serialize(void* buffer) const
 {
     serialize_value(&buffer, mType);
     serialize_value(&buffer, mLd);
@@ -374,31 +374,31 @@ void GeluPluginDynamic::serialize(void* buffer) const
         const size_t biasSize = mHasBias ? mLd * wordSize : 0;
         if (biasSize <= 0)
         {
-            gLogError << "Gelu+bias: bias size inconsistent" << std::endl;
+            gLogError << "Isrlu + bias: bias size inconsistent" << std::endl;
         }
         serFromDev(d, mBiasDev, mLd * wordSize);
     }
 }
 
-void GeluPluginDynamic::destroy()
+void IsrluPluginDynamic::destroy()
 {
     // This gets called when the network containing plugin is destroyed
     delete this;
 }
 
-void GeluPluginDynamic::setPluginNamespace(const char* libNamespace)
+void IsrluPluginDynamic::setPluginNamespace(const char* libNamespace)
 {
     mNamespace = libNamespace;
 }
 
-const char* GeluPluginDynamic::getPluginNamespace() const
+const char* IsrluPluginDynamic::getPluginNamespace() const
 {
     return mNamespace.c_str();
 }
 
 ///////////////
 
-GeluPluginDynamicCreator::GeluPluginDynamicCreator()
+IsrluPluginDynamicCreator::IsrluPluginDynamicCreator()
 {
 
     // Fill PluginFieldCollection with PluginField arguments metadata
@@ -406,22 +406,22 @@ GeluPluginDynamicCreator::GeluPluginDynamicCreator()
     mFC.fields = mPluginAttributes.data();
 }
 
-const char* GeluPluginDynamicCreator::getPluginName() const
+const char* IsrluPluginDynamicCreator::getPluginName() const
 {
-    return GELU_PLUGIN_NAME;
+    return ISRLU_PLUGIN_NAME;
 }
 
-const char* GeluPluginDynamicCreator::getPluginVersion() const
+const char* IsrluPluginDynamicCreator::getPluginVersion() const
 {
-    return GELU_PLUGIN_VERSION;
+    return ISRLU_PLUGIN_VERSION;
 }
 
-const PluginFieldCollection* GeluPluginDynamicCreator::getFieldNames()
+const PluginFieldCollection* IsrluPluginDynamicCreator::getFieldNames()
 {
     return &mFC;
 }
 
-IPluginV2* GeluPluginDynamicCreator::createPlugin(const char* name, const PluginFieldCollection* fc)
+IPluginV2* IsrluPluginDynamicCreator::createPlugin(const char* name, const PluginFieldCollection* fc)
 {
 
     Weights bias{DataType::kFLOAT, nullptr, 0};
@@ -447,32 +447,32 @@ IPluginV2* GeluPluginDynamicCreator::createPlugin(const char* name, const Plugin
 
     if (typeId < 0 || typeId > 3)
     {
-        gLogError << "GELU: invalid typeId " << typeId << std::endl;
+        gLogError << "ISRLU: invalid typeId " << typeId << std::endl;
         return nullptr;
     }
     DataType type = static_cast<DataType>(typeId);
-    gLogVerbose << "Creating GeluPluginDynamic...\n";
+    gLogVerbose << "Creating IsrluPluginDynamic...\n";
     if (bias.values == nullptr)
     {
-        return new GeluPluginDynamic(name, type);
+        return new IsrluPluginDynamic(name, type);
     }
 
-    return new GeluPluginDynamic(name, type, bias);
+    return new IsrluPluginDynamic(name, type, bias);
 }
 
-IPluginV2* GeluPluginDynamicCreator::deserializePlugin(const char* name, const void* serialData, size_t serialLength)
+IPluginV2* IsrluPluginDynamicCreator::deserializePlugin(const char* name, const void* serialData, size_t serialLength)
 {
     // This object will be deleted when the network is destroyed, which will
     // call GeluPluginDynamic::destroy()
-    return new GeluPluginDynamic(name, serialData, serialLength);
+    return new IsrluPluginDynamic(name, serialData, serialLength);
 }
 
-void GeluPluginDynamicCreator::setPluginNamespace(const char* libNamespace)
+void IsrluPluginDynamicCreator::setPluginNamespace(const char* libNamespace)
 {
     mNamespace = libNamespace;
 }
 
-const char* GeluPluginDynamicCreator::getPluginNamespace() const
+const char* IsrluPluginDynamicCreator::getPluginNamespace() const
 {
     return mNamespace.c_str();
 }
