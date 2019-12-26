@@ -218,7 +218,7 @@ nvinfer1::DimsExprs IsrluPluginDynamic::getOutputDimensions(
     return inputs[0];
 }
 
-bool GeluPluginDynamic::supportsFormatCombination(
+bool IsrluPluginDynamic::supportsFormatCombination(
     int pos, const nvinfer1::PluginTensorDesc* inOut, int nbInputs, int nbOutputs)
 {
 
@@ -235,18 +235,18 @@ bool GeluPluginDynamic::supportsFormatCombination(
     return false;
 }
 
-void GeluPluginDynamic::configurePlugin(const nvinfer1::DynamicPluginTensorDesc* in, int nbInputs,
+void IsrluPluginDynamic::configurePlugin(const nvinfer1::DynamicPluginTensorDesc* in, int nbInputs,
     const nvinfer1::DynamicPluginTensorDesc* out, int nbOutputs)
 {
     assert(mType == in[0].desc.type);
 }
 
-size_t GeluPluginDynamic::getWorkspaceSize(const nvinfer1::PluginTensorDesc* inputs, int nbInputs,
+size_t IsrluPluginDynamic::getWorkspaceSize(const nvinfer1::PluginTensorDesc* inputs, int nbInputs,
     const nvinfer1::PluginTensorDesc* outputs, int nbOutputs) const
 {
     return 0;
 }
-int GeluPluginDynamic::enqueue(const nvinfer1::PluginTensorDesc* inputDesc,
+int IsrluPluginDynamic::enqueue(const nvinfer1::PluginTensorDesc* inputDesc,
     const nvinfer1::PluginTensorDesc* outputDesc, const void* const* inputs, void* const* outputs, void* workspace,
     cudaStream_t stream)
 {
@@ -265,11 +265,11 @@ int GeluPluginDynamic::enqueue(const nvinfer1::PluginTensorDesc* inputDesc,
             const float* bias = reinterpret_cast<float*>(mBiasDev);
             const int cols = inputVolume / mLd;
             const int rows = mLd;
-            computeGeluBias(output, input, bias, rows, cols, stream);
+            computeIsrluBias(output, input, bias, rows, cols, stream);
         }
         else
         {
-            status = computeGelu(stream, inputVolume, input, output);
+            status = computeIsrlu(stream, inputVolume, input, output);
         }
     }
     else if (mType == DataType::kHALF)
@@ -283,11 +283,11 @@ int GeluPluginDynamic::enqueue(const nvinfer1::PluginTensorDesc* inputDesc,
             const half* bias = reinterpret_cast<half*>(mBiasDev);
             const int cols = inputVolume / mLd;
             const int rows = mLd;
-            computeGeluBias(output, input, bias, rows, cols, stream);
+            computeIsrluBias(output, input, bias, rows, cols, stream);
         }
         else
         {
-            status = computeGelu(stream, inputVolume, input, output);
+            status = computeIsrlu(stream, inputVolume, input, output);
         }
     }
     else
@@ -299,7 +299,7 @@ int GeluPluginDynamic::enqueue(const nvinfer1::PluginTensorDesc* inputDesc,
 }
 
 // IPluginV2Ext Methods
-nvinfer1::DataType GeluPluginDynamic::getOutputDataType(
+nvinfer1::DataType IsrluPluginDynamic::getOutputDataType(
     int index, const nvinfer1::DataType* inputTypes, int nbInputs) const
 {
     assert(index == 0);
