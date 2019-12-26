@@ -31,8 +31,8 @@ namespace bert
 {
     constexpr float alpha = 3;  // fixing the value of the hyper-parameter.
 
-template <typename T, unsigned TPB>
-__global__ void ISRLUKernel(const T alpha, int n, const T* input, T* output)
+template <typename T, unsigned TPB>  // TPB : Threads Per Block.
+__global__ void IsrluKernel(const T alpha, int n, const T* input, T* output)
 {
 
     const int idx = blockIdx.x * TPB + threadIdx.x;
@@ -54,12 +54,12 @@ __global__ void ISRLUKernel(const T alpha, int n, const T* input, T* output)
     }
 }
 
-inline int computeGelu(cudaStream_t stream, int n, const float* input, float* output)
+inline int computeIsrlu(cudaStream_t stream, int n, const float* input, float* output)
 {
 
     constexpr int blockSize = 256;
     const int gridSize = (n + blockSize - 1) / blockSize;
-    geluKernel<float, blockSize><<<gridSize, blockSize, 0, stream>>>(A, B, C, n, input, output);
+    <IsrluKernel<float, blockSize><<<gridSize, blockSize, 0, stream>>>(alpha, n, input, output);
 
     CHECK(cudaPeekAtLastError());
     return 0;
@@ -71,27 +71,27 @@ inline int computeGelu(cudaStream_t stream, int n, const half* input, half* outp
 
     if (0 == (n & 1))
     {
-        const int n2 = n / 2;
-
+        const int n2 = n / 2;       // for enabling half precision (FP16)
         const int gridSize = (n2 + blockSize - 1) / blockSize;
-        const half2 A2 = __floats2half2_rn(A, A);
-        const half2 B2 = __floats2half2_rn(B, B);
-        const half2 C2 = __floats2half2_rn(C, C);
+        
+        const half2 alpha2 = __floats2half2_rn(alpha, aplha);
+        
         const half2* input2 = reinterpret_cast<const half2*>(input);
         half2* output2 = reinterpret_cast<half2*>(output);
-        geluKernel<half2, blockSize><<<gridSize, blockSize, 0, stream>>>(A2, B2, C2, n2, input2, output2);
+        
+        IsrluKernel<half2, blockSize><<<gridSize, blockSize, 0, stream>>>(alpha2, n2, input2, output2);
     }
     else
     {
         const int gridSize = (n + blockSize - 1) / blockSize;
-        geluKernel<half, blockSize><<<gridSize, blockSize, 0, stream>>>(A, B, C, n, input, output);
+        geluKernel<half, blockSize><<<gridSize, blockSize, 0, stream>>>(alpha, n, input, output);
     }
 
     CHECK(cudaPeekAtLastError());
     return 0;
 }
 
-template <typename T, int TPB>
+template <typename T, int TPB>  
 __global__ void geluBiasKernel(const T a, const T b, const T c, T* output, const T* input, const T* bias, const int ld)
 {
 
