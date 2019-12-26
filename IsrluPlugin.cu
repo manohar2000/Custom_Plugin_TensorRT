@@ -149,8 +149,8 @@ void computeIsrluBias(
 
 namespace
 {
-static const char* GELU_PLUGIN_VERSION{"1"};
-static const char* GELU_PLUGIN_NAME{"CustomGeluPluginDynamic"};
+static const char* ISRLU_PLUGIN_VERSION{"1"};
+static const char* ISRLU_PLUGIN_NAME{"CustomIsrluPluginDynamic"};
 } // namespace
 
 // Static class fields initialization
