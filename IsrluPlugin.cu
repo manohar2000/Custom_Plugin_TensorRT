@@ -159,7 +159,7 @@ std::vector<PluginField> IsrluPluginDynamicCreator::mPluginAttributes;
 
 REGISTER_TENSORRT_PLUGIN(IsrluPluginDynamicCreator);
 
-GeluPluginDynamic::GeluPluginDynamic(const std::string name, const DataType type)
+IsrluPluginDynamic::IsrluPluginDynamic(const std::string name, const DataType type)
     : mLayerName(name)
     , mType(type)
     , mHasBias(false)
@@ -169,7 +169,7 @@ GeluPluginDynamic::GeluPluginDynamic(const std::string name, const DataType type
     mBias.count = 0;
 }
 
-GeluPluginDynamic::GeluPluginDynamic(const std::string name, const DataType type, const Weights B)
+IsrluPluginDynamic::IsrluPluginDynamic(const std::string name, const DataType type, const Weights B)
     : mLayerName(name)
     , mType(type)
     , mHasBias(true)
@@ -178,10 +178,10 @@ GeluPluginDynamic::GeluPluginDynamic(const std::string name, const DataType type
 {
 }
 
-GeluPluginDynamic::GeluPluginDynamic(const std::string name, const void* data, size_t length)
+IsrluPluginDynamic::IsrluPluginDynamic(const std::string name, const void* data, size_t length)
     : mLayerName(name)
 {
-    gLogVerbose << "Starting to deserialize GELU plugin" << std::endl;
+    gLogVerbose << "Starting to deserialize ISRLU plugin" << std::endl;
     deserialize_value(&data, &length, &mType);
     deserialize_value(&data, &length, &mLd);
     deserialize_value(&data, &length, &mHasBias);
@@ -193,26 +193,26 @@ GeluPluginDynamic::GeluPluginDynamic(const std::string name, const void* data, s
         gLogVerbose << "Deserializing Bias" << std::endl;
         if (mLd <= 0)
         {
-            gLogError << "Gelu+bias: deserialization inconsistent. HasBias but mLd is 0" << std::endl;
+            gLogError << "Isrlu + bias: deserialization inconsistent. HasBias but mLd is 0" << std::endl;
         }
         const size_t wordSize = samplesCommon::getElementSize(mType);
         mBiasDev = deserToDev<char>(d, mLd * wordSize);
     }
-    gLogVerbose << "Finished deserializing GELU plugin" << std::endl;
+    gLogVerbose << "Finished deserializing ISRLU plugin" << std::endl;
     mBias.values = nullptr;
     mBias.count = mLd;
 }
 // IPluginV2DynamicExt Methods
-nvinfer1::IPluginV2DynamicExt* GeluPluginDynamic::clone() const
+nvinfer1::IPluginV2DynamicExt* IsrluPluginDynamic::clone() const
 {
     if (mHasBias)
     {
-        return new GeluPluginDynamic(mLayerName, mType, mBias);
+        return new IsrluPluginDynamic(mLayerName, mType, mBias);
     }
-    return new GeluPluginDynamic(mLayerName, mType);
+    return new IsrluPluginDynamic(mLayerName, mType);
 }
 
-nvinfer1::DimsExprs GeluPluginDynamic::getOutputDimensions(
+nvinfer1::DimsExprs IsrluPluginDynamic::getOutputDimensions(
     int outputIndex, const nvinfer1::DimsExprs* inputs, int nbInputs, nvinfer1::IExprBuilder& exprBuilder)
 {
     return inputs[0];
