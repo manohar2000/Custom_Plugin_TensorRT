@@ -28,11 +28,10 @@ using namespace nvinfer1;
 
 namespace bert
 {
-
-
+    constexpr float alpha = 3;  // fixing the value of the hyper-parameter.
 
 template <typename T, unsigned TPB>
-__global__ void ISRLUKernel( int n, const T* input, T* output)
+__global__ void ISRLUKernel(const T alpha, int n, const T* input, T* output)
 {
 
     const int idx = blockIdx.x * TPB + threadIdx.x;
@@ -40,8 +39,8 @@ __global__ void ISRLUKernel( int n, const T* input, T* output)
     if (idx < n)
     {
         const T in = input[idx];
-        const T cdf = a + a * tanh(in * (c * in * in + b));
-        output[idx] = in * cdf;
+        
+        
     }
 }
 
