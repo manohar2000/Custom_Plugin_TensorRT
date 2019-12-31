@@ -5,7 +5,6 @@ Table of Contents:
 •	What all files does the sample contain
 •	Prerequisites
 •	Running this sample
-•	Results
 •	Known issues
 •	Citations
 
@@ -41,11 +40,7 @@ A jupyter notebook is given which can be run google Colab notebook It is used th
 4.0	Running this sample:
 For running this sample one can open “MainFile(1).ipynb in collab notebooks and execute the cells
 
-5.0	Results: 
-The inference was done on the  MNIST dataset.The results before and after were as shown:
-                                           
-Fig 1: without TRT the accuracy was  98.8%             Fig 2: with custom plugin the acc was 98%
-6.0	Known Issues:
+5.0	Known Issues:
 The user might experience some compatability issues depending upon the TensorRT version they use . In that case user can refer the TensorRT documentation.
 7.0	Citations:
 [1]: arXiv:1710.09967 [cs.LG]
